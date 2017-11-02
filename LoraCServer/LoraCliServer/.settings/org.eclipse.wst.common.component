@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?><project-modules id="moduleCoreId" project-version="1.5.0">
+    <wb-module deploy-name="LoraCliServer">
+        <wb-resource deploy-path="/" source-path="/EarContent" tag="defaultRootSource"/>
+        <dependent-module archiveName="LoraCliServerClient.jar" deploy-path="/" handle="module:/resource/LoraCliServerClient/LoraCliServerClient">
+            <dependent-object/>
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="LoraCliServerEJB.jar" deploy-path="/" handle="module:/resource/LoraCliServerEJB/LoraCliServerEJB">
+            <dependent-object/>
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="LoraCliServerConnector.rar" deploy-path="/" handle="module:/resource/LoraCliServerConnector/LoraCliServerConnector">
+            <dependent-object/>
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="LoraCliServerWeb.war" deploy-path="/" handle="module:/resource/LoraCliServerWeb/LoraCliServerWeb">
+            <dependent-object/>
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+    </wb-module>
+</project-modules>

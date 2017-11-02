@@ -1,0 +1,35 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:h="http://java.sun.com/jsf/html">
+
+<h:head></h:head>
+<body>
+	<h:form>
+		<rich:panel header="Create User">
+			<ui:remove>
+				<h:panelGrid style="align-content: center;">
+					<h:panelGrid columns="2">
+						<h:outputText value="Username" />
+						<h:inputText value="#{trackerManager.loraUser.username}" />
+						<h:outputText value="Password" />
+						<h:inputSecret value="#{trackerManager.loraUser.password}" />
+						<h:outputText value="User Role" />
+						<h:inputText value="#{trackerManager.loraUser.userRole}" />
+						<h:outputText value="User Group" />
+						<h:inputText value="#{trackerManager.loraUser.userGroup}" />
+					</h:panelGrid>
+					<h:commandButton value="Save User"
+						action="#{trackerManager.saveUser()}" />
+				</h:panelGrid>
+			</ui:remove>
+
+			<h:commandButton value="Connect"
+				action="#{trackerManager.connectServer()}" />
+		</rich:panel>
+	</h:form>
+</body>
+</html>
