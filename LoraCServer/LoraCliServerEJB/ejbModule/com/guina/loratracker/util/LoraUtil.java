@@ -5,8 +5,8 @@ import java.io.InputStream;
 
 import org.jboss.logging.Logger;
 
-import com.guina.loratracker.action.LoraCommand;
-import com.guina.loratracker.action.LoraCommandType;
+import com.guina.loratracker.model.LoraCommand;
+import com.guina.loratracker.model.LoraCommandType;
 
 public class LoraUtil
 {
@@ -115,7 +115,7 @@ public class LoraUtil
 			}
 			logger.info("Received command type: " + commandReceived.getCommandType());
 
-			// Little endian
+			// Little Endian
 			int payloadLen = ((buff[6] & 0xff) << 8) | (buff[5] & 0xff);
 			logger.info("Received data length: " + payloadLen);
 			// Pay load data
@@ -130,7 +130,8 @@ public class LoraUtil
 			{
 				data += String.valueOf((char) buff[idx]);
 			}
-			commandReceived.setData(data);
+			//ManThink is using Class as attribute, but it is a Java keyword
+			commandReceived.setData(data.replaceAll("Class", "loraClass"));
 
 			inputStream.read(buff, 7 + payloadLen, 1);
 			if (buff[7 + payloadLen] != (byte) 0xF0)

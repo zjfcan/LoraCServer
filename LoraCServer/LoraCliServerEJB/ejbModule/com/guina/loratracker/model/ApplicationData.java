@@ -2,10 +2,21 @@ package com.guina.loratracker.model;
 
 public class ApplicationData
 {
+	private LoginAccount account;
 	private UpLinkData immeApp;
 	private UpLinkData app;
 	private Mote mote;
 	private Gateway gateway;
+
+	public LoginAccount getAccount()
+	{
+		return account;
+	}
+
+	public void setAccount(LoginAccount account)
+	{
+		this.account = account;
+	}
 
 	public UpLinkData getImmeApp()
 	{

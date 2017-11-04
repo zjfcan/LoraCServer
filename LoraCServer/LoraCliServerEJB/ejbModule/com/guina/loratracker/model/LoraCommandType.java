@@ -1,4 +1,4 @@
-package com.guina.loratracker.action;
+package com.guina.loratracker.model;
 
 public enum LoraCommandType
 {

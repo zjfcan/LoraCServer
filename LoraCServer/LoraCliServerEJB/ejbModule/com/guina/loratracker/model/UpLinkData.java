@@ -10,10 +10,14 @@ public class UpLinkData
 	private long moteEui;
 	@JsonProperty(required = true)
 	private String dir;
-	private short token;
+	private int token;
 	private boolean confirmed;
 	private UserData userData;
 	private List<GateWayRx> gwrx;
+	private int loraClass;
+	private int sessionID;
+	private int TxUTCtime;
+	
 
 	public long getMoteEui()
 	{
@@ -35,12 +39,12 @@ public class UpLinkData
 		this.dir = dir;
 	}
 
-	public short getToken()
+	public int getToken()
 	{
 		return token;
 	}
 
-	public void setToken(short token)
+	public void setToken(int token)
 	{
 		this.token = token;
 	}
@@ -73,5 +77,35 @@ public class UpLinkData
 	public void setGwrx(List<GateWayRx> gwrx)
 	{
 		this.gwrx = gwrx;
+	}
+
+	public int getLoraClass()
+	{
+		return loraClass;
+	}
+
+	public void setLoraClass(int loraClass)
+	{
+		this.loraClass = loraClass;
+	}
+
+	public int getSessionID()
+	{
+		return sessionID;
+	}
+
+	public void setSessionID(int sessionID)
+	{
+		this.sessionID = sessionID;
+	}
+
+	public int getTxUTCtime()
+	{
+		return TxUTCtime;
+	}
+
+	public void setTxUTCtime(int txUTCtime)
+	{
+		TxUTCtime = txUTCtime;
 	}
 }
