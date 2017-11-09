@@ -1,7 +1,10 @@
 package com.guina.loratracker.model;
 
-public class GatewayStatus
+import java.io.Serializable;
+
+public class GatewayStatus implements Serializable
 {
+	private static final long serialVersionUID = -8578609446078772644L;
 //	{"time":"1970-01-07 18:47:47 GMT","lati":0.0,"Long":0.0,"alti":0,"rxnb":1,"rxok":1,"rxfw":0,"ackr":3,"dwnb":0,"txnb":0},
 	
 	private String time;
@@ -93,5 +96,12 @@ public class GatewayStatus
 	public void setTxnb(long txnb)
 	{
 		this.txnb = txnb;
+	}
+	@Override
+	public String toString()
+	{
+		return "GatewayStatus [time=" + time + ", lati=" + lati + ", Long=" + Long + ", alti="
+						+ alti + ", rxnb=" + rxnb + ", rxok=" + rxok + ", rxfw=" + rxfw + ", ackr="
+						+ ackr + ", dwnb=" + dwnb + ", txnb=" + txnb + "]";
 	}
 }

@@ -2,7 +2,7 @@ package com.guina.loratracker.model;
 
 import java.io.Serializable;
 
-public class NamedNode implements Serializable
+public abstract class NamedNode implements Serializable
 {
 	private static final long serialVersionUID = 2253107005447940202L;
 	protected String type;

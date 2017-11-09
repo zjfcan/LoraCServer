@@ -4,23 +4,31 @@ import java.io.DataOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
-import javax.ejb.Schedule;
-import javax.ejb.Stateless;
+import javax.ejb.EJB;
+import javax.ejb.Singleton;
 import javax.ejb.Timer;
 
 import org.jboss.logging.Logger;
 
+import com.guina.loratracker.model.ApplicationData;
+import com.guina.loratracker.model.GateWayRx;
+import com.guina.loratracker.model.Gateway;
+import com.guina.loratracker.model.LoginAccount;
 import com.guina.loratracker.model.LoraCommand;
 import com.guina.loratracker.model.LoraCommandType;
-import com.guina.loratracker.model.ApplicationData;
-import com.guina.loratracker.model.LoginAccount;
 import com.guina.loratracker.model.LoraLoginJsn;
+import com.guina.loratracker.model.Mote;
+import com.guina.loratracker.model.UpLinkData;
 import com.guina.loratracker.util.EncodeUtil;
 import com.guina.loratracker.util.JsonUtils;
 import com.guina.loratracker.util.LoraUtil;
 
-@Stateless
+@Singleton
 public class LoraDataRetriever
 {
 	private Logger logger = Logger.getLogger(this.getClass());
@@ -35,39 +43,24 @@ public class LoraDataRetriever
 	private static final String pwd = "testaccount";
 	private String heartBeatMessage;
 	private String loginMessage;
+	private boolean receivingData = true;
 
-	/**
-	 * Default constructor.
-	 */
-	public LoraDataRetriever()
-	{
-		// TODO Auto-generated constructor stub
-	}
+	@EJB
+	private LoraDataManager dataManager;
 
-	// @SuppressWarnings("unused")
-	@Schedule(second = "*/15", minute = "*", hour = "*", /* "8-23", dayOfWeek = "Mon-Fri", */dayOfMonth = "*", month = "*", year = "*", persistent = false, info = "ConnectionTimer")
+	@SuppressWarnings("unused")
+	// @Schedule(second = "*/15", minute = "*/1", hour = "*", /* "8-23", dayOfWeek = "Mon-Fri", */dayOfMonth = "*", month = "*", year = "*", persistent = false,
+	// info = "ConnectionTimer")
 	private void scheduledTimeout(final Timer t)
 	{
-		connectServer();
+		startReceiveData(50);
 	}
 
-	public void connectServer()
+	public void startReceiveData(int total)
 	{
-		logger.info("Connect server: ");
-		LoraLoginJsn loginData = new LoraLoginJsn();
-		LoginAccount account = new LoginAccount();
-		account.setUser(user);
-		account.setPwd(EncodeUtil.md5Encrypt32(pwd));
-		account.setDwnData(true);
-		loginData.setAccount(account);
-
-		String loginInfo = JsonUtils.convertJsonToString(loginData);
-
-		// String loginInfo = "{" + "\"account\":{" + "\"user\":\""+user+"\"," + "\"APPEUI\":0,"
-		// + "\"customer\":null," + "\"pwd\":\""
-		// + EncodeUtil.md5Encrypt32(pwd) + "\"," + "\"DwnData\":true,"
-		// + "\"accept\":false," + "\"serverAccept\":false," + "\"serverUser\":null,"
-		// + "\"serverPwd\":null," + "\"serverDB\":null" + "}" + "}";
+		logger.info("Connecting server (with count=" + total + ")...");
+		setReceivingData(true);
+		String loginInfo = createLoginRequest();
 
 		try (Socket clientSocket = new Socket(TCP_SERVER_ADDRESS, TCP_PORT))
 		{
@@ -104,7 +97,7 @@ public class LoraDataRetriever
 
 			ApplicationData loginDataReceived = JsonUtils.convertStringToJson(ApplicationData.class,
 							readFromServer.getData());
-			if (loginDataReceived.getAccount() == null
+			if (loginDataReceived == null || loginDataReceived.getAccount() == null
 							|| !loginDataReceived.getAccount().isAccept())
 			{
 				setLoginMessage(LOGGIN_FAILED);
@@ -119,42 +112,46 @@ public class LoraDataRetriever
 
 			// Read data
 			int count = 0;
-			while (true)
+			while (count++ < total && isReceivingData())
 			{
 				readFromServer = LoraUtil.readData(inputStream);
 				if (!LoraCommandType.JASON_OBJ.equals(readFromServer.getCommandType()))
 				{
 					logger.error("Unexpected command received: " + readFromServer);
+					Thread.sleep(60000);
 					continue;
 				}
+
 				ApplicationData dataReceived = JsonUtils.convertStringToJson(ApplicationData.class,
 								readFromServer.getData());
-
 				if (dataReceived != null)
 				{
-					if (dataReceived.getImmeApp() != null)
+					UpLinkData immeApp = dataReceived.getImmeApp();
+					if (immeApp != null)
 					{
-						logger.info("Received 'immeApp'");
+						logger.info("Received (" + count + "): " + readFromServer);
+						recordGatewayMotes(immeApp);
 					}
 
-					if (dataReceived.getApp() != null)
+					UpLinkData app = dataReceived.getApp();
+					if (app != null)
 					{
-						logger.info("Received 'app'");
+						logger.info("Received (" + count + "): " + readFromServer);
+						recordGatewayMotes(app);
 					}
 
-					if (dataReceived.getMote() != null)
+					Mote mote = dataReceived.getMote();
+					if (mote != null)
 					{
-						logger.info("Received 'mote'");
+						logger.info("Received (" + count + "): " + readFromServer);
 					}
 
-					if (dataReceived.getGateway() != null)
+					Gateway gateway = dataReceived.getGateway();
+					if (gateway != null && gateway.getStatus().getLati() != 0)
 					{
-						logger.info("Received 'gateway'");
+						logger.info("Received (" + count + "): " + readFromServer);
+						dataManager.putEuiToGateways(LoraUtil.longToHex(gateway.getEUI()), gateway);
 					}
-				}
-				if (count++ > 10)
-				{
-					break;
 				}
 			}
 		}
@@ -162,6 +159,56 @@ public class LoraDataRetriever
 		{
 			logger.error("Error to connect to lora application server.", e);
 		}
+	}
+
+	private void recordGatewayMotes(UpLinkData userMote)
+	{
+		Iterator<GateWayRx> ite = userMote.getGwrx().iterator();
+		while (ite.hasNext())
+		{
+			GateWayRx gateway = ite.next();
+			String gatewayEuiHex = LoraUtil.longToHex(gateway.getEui());
+			Map<String, Set<String>> gatewayEuiToMoteEui = dataManager.getGatewayEuiToMoteEui();
+			Set<String> moteEuis = gatewayEuiToMoteEui.get(gatewayEuiHex);
+			if (moteEuis == null)
+			{
+				moteEuis = new HashSet<>();
+				dataManager.putGatewayEuiToMoteEui(gatewayEuiHex, moteEuis);
+			}
+			String moteEuiHex = LoraUtil.longToHex(userMote.getMoteEui());
+			moteEuis.add(moteEuiHex);
+
+			Set<String> moteReportTimes = dataManager.getMoteEuiToMoteReportTime().get(moteEuiHex);
+			if (moteReportTimes == null)
+			{
+				moteReportTimes = new HashSet<>();
+				dataManager.putMoteEuiToMoteReportTime(moteEuiHex, moteReportTimes);
+			}
+			String sentGatewayTime = gateway.getTime();
+			moteReportTimes.add(sentGatewayTime);
+
+			dataManager.putReportTimeToUplinkData(sentGatewayTime, userMote);
+		}
+	}
+
+	private String createLoginRequest()
+	{
+		// String loginInfo = "{" + "\"account\":{" + "\"user\":\""+user+"\"," + "\"APPEUI\":0,"
+		// + "\"customer\":null," + "\"pwd\":\""
+		// + EncodeUtil.md5Encrypt32(pwd) + "\"," + "\"DwnData\":true,"
+		// + "\"accept\":false," + "\"serverAccept\":false," + "\"serverUser\":null,"
+		// + "\"serverPwd\":null," + "\"serverDB\":null" + "}" + "}";
+
+		LoraLoginJsn loginData = new LoraLoginJsn();
+		LoginAccount account = new LoginAccount();
+		account.setUser(user);
+		account.setPwd(EncodeUtil.md5Encrypt32(pwd));
+		account.setDwnData(true);
+		loginData.setAccount(account);
+
+		String loginInfo = JsonUtils.convertJsonToString(loginData);
+
+		return loginInfo;
 	}
 
 	public String getHeartBeatMessage()
@@ -182,5 +229,20 @@ public class LoraDataRetriever
 	public void setLoginMessage(String loginMessage)
 	{
 		this.loginMessage = loginMessage;
+	}
+
+	public boolean isReceivingData()
+	{
+		return receivingData;
+	}
+
+	public void setReceivingData(boolean receivingData)
+	{
+		this.receivingData = receivingData;
+	}
+
+	public void stopReceiveData()
+	{
+		setReceivingData(false);
 	}
 }

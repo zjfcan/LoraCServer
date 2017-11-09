@@ -2,7 +2,7 @@
 <web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://xmlns.jcp.org/xml/ns/javaee" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd" version="3.1">
   <display-name>LoraCliServerWeb</display-name>
   <welcome-file-list>
-    <welcome-file>trackerManager.xhtml</welcome-file>
+    <welcome-file>loraTracker.xhtml</welcome-file>
     <welcome-file>welcome.xhtml</welcome-file>
   </welcome-file-list>
   <context-param>

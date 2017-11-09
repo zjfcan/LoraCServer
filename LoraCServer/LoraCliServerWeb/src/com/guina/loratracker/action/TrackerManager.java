@@ -36,7 +36,7 @@ public class TrackerManager implements Serializable
 
 	public String connectServer()
 	{
-		dataRetriever.connectServer();
+		dataRetriever.startReceiveData(100);
 		logger.info("Finished connect server.");
 		return null;
 	}

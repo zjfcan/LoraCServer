@@ -83,4 +83,11 @@ public class Mote
 		this.ackRx = ackRx;
 	}
 
+	@Override
+	public String toString()
+	{
+		return "Mote [eui=" + eui + ", seqNoReq=" + seqNoReq + ", seqnogrant=" + seqnogrant
+						+ ", app=" + app + ", sentStatus=" + sentStatus + ", msgSent=" + msgSent
+						+ ", ackRx=" + ackRx + "]";
+	}
 }

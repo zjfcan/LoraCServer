@@ -1,7 +1,10 @@
 package com.guina.loratracker.model;
 
-public class Gateway
+import java.io.Serializable;
+
+public class Gateway implements Serializable
 {
+	private static final long serialVersionUID = 2335793041136210969L;
 	// {"gateway":{"EUI":721177472077463560,"APPEUI":0,"protocolversion":1,"gatewayprotocol":0,"sessionID":0,"IPAddr":"183.129.47.89",
 	// "PortPULL":4500,"Port":4500,"Status":
 	// {"time":"1970-01-07 18:47:47 GMT","lati":0.0,"Long":0.0,"alti":0,"rxnb":1,"rxok":1,"rxfw":0,"ackr":3,"dwnb":0,"txnb":0},
@@ -127,5 +130,15 @@ public class Gateway
 	public void setSysTime(String sysTime)
 	{
 		SysTime = sysTime;
+	}
+
+	@Override
+	public String toString()
+	{
+		return "Gateway [EUI=" + EUI + ", APPEUI=" + APPEUI + ", protocolVersion=" + protocolVersion
+						+ ", gatewayProtocol=" + gatewayProtocol + ", sessionID=" + sessionID
+						+ ", IPAddr=" + IPAddr + ", PortPULL=" + PortPULL + ", Port=" + Port
+						+ ", protocolversion=" + protocolversion + ", Status=" + Status
+						+ ", SysTime=" + SysTime + "]";
 	}
 }

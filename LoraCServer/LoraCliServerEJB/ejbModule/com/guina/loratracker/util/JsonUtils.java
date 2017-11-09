@@ -2,6 +2,8 @@ package com.guina.loratracker.util;
 
 import java.util.List;
 
+import org.jboss.logging.Logger;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -9,6 +11,8 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 
 public class JsonUtils
 {
+	private static Logger logger = Logger.getLogger(JsonUtils.class);
+
 	public static <T> T convertStringToJson(Class<T> classObj, String strJsonData)
 	{
 		try
@@ -22,8 +26,10 @@ public class JsonUtils
 		{
 			String errMessage = String.format("Failed to parse as Json object. Type: %s, Error: %s",
 							classObj.getName(), e1.getMessage());
-			throw new RuntimeException(errMessage, e1);
+			logger.error(errMessage, e1);
 		}
+		
+		return null;
 	}
 
 	public static <T> List<T> convertStringToJsonList(Class<T> classObj, String strJsonData)
@@ -39,8 +45,10 @@ public class JsonUtils
 		{
 			String errMessage = String.format("Failed to parse as Json object. Type: %s, Error: %s",
 							classObj.getName(), e1.getMessage());
-			throw new RuntimeException(errMessage, e1);
+			logger.error(errMessage, e1);
 		}
+		
+		return null;
 	}
 
 	public static String convertJsonToString(Object jsonObj)
@@ -82,7 +90,9 @@ public class JsonUtils
 		catch (Exception e)
 		{
 			String errMessage = "Failed to convert from Json to String.";
-			throw new RuntimeException(errMessage, e);
+			logger.error(errMessage, e);
 		}
+		
+		return null;
 	}
 }

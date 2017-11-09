@@ -15,7 +15,7 @@ public class LoraUtil
 	public static byte[] getCommandData(LoraCommand command)
 	{
 		int length = command.getData().length();
-		logger.info("Login info length: " + length);
+//		logger.info("Login info length: " + length);
 		byte[] loginInfoBuff = new byte[length + 8];
 		loginInfoBuff[0] = (byte) 0xB0;
 		loginInfoBuff[1] = (byte) 0xB0;
@@ -52,6 +52,12 @@ public class LoraUtil
 		return loginInfoBuff;
 	}
 
+	public static String longToHex(long longVal)
+	{
+		String hex16Chars = String.format("%016X", longVal);
+		return hex16Chars;
+	}
+	
 	public static String bytesToHex(byte[] in)
 	{
 		final StringBuilder builder = new StringBuilder();
@@ -77,7 +83,7 @@ public class LoraUtil
 				catch (InterruptedException e)
 				{
 					// do nothing
-					logger.debug("Sleep interupted.", e);
+					logger.info("Sleep interupted.", e);
 				}
 				continue;
 			}
@@ -113,11 +119,11 @@ public class LoraUtil
 				logger.error("Unexpected command: " + String.valueOf((byte) buff[4]));
 				continue;
 			}
-			logger.info("Received command type: " + commandReceived.getCommandType());
+//			logger.info("Received command type: " + commandReceived.getCommandType());
 
 			// Little Endian
 			int payloadLen = ((buff[6] & 0xff) << 8) | (buff[5] & 0xff);
-			logger.info("Received data length: " + payloadLen);
+//			logger.info("Received data length: " + payloadLen);
 			// Pay load data
 			if (inputStream.read(buff, 7, payloadLen) < 0)
 			{
@@ -140,7 +146,7 @@ public class LoraUtil
 			}
 			break;
 		}
-		logger.info("Received command: " + commandReceived);
+//		logger.info("Received command: " + commandReceived);
 
 		return commandReceived;
 	}

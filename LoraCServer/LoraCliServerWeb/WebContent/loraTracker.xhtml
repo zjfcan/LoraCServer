@@ -1,0 +1,57 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:h="http://java.sun.com/jsf/html">
+
+<h:head></h:head>
+<body>
+	<h:outputStylesheet name="css/loraWeb.css" />
+	<h:form id="form">
+		<h:panelGrid columns="2" columnClasses="treeMenu,mainContent"
+			width="100%">
+			<h:panelGrid columns="2">
+				<h:inputText value="#{loraTrackerTreeBean.total}">
+					<a4j:ajax />
+				</h:inputText>
+				<h:commandButton value="Start"
+					action="#{loraTrackerTreeBean.startReceivingData()}" />
+			</h:panelGrid>
+			<h:commandButton value="Stop"
+				action="#{loraTrackerTreeBean.stopReceivingData()}" />
+
+			<rich:panel>
+				<f:facet name="header">
+					<span>LORA Tracker</span>
+				</f:facet>
+				<rich:tree id="tree" nodeType="#{node.type}" var="node"
+					value="#{loraTrackerTreeBean.rootNodes}" toggleType="server"
+					useDefaultNode="true" selectionType="ajax"
+					selectionChangeListener="#{loraTrackerTreeBean.selectionChanged}"
+					render="trackerMap">
+					<rich:treeNode type="Gateway">
+						<span>#{node.name}</span>
+					</rich:treeNode>
+				</rich:tree>
+			</rich:panel>
+			<a4j:outputPanel ajaxRendered="true" layout="block">
+				<rich:panel id="trackerMap" header="Tracker Map">
+					<h:outputText value="#{loraTrackerTreeBean.displayData}" />
+					<h:commandButton value="Add Markers">
+						<a4j:ajax event="click"
+							oncomplete="addMarkers(#{loraTrackerTreeBean.mapMarkers})" />
+					</h:commandButton>
+
+					<div id="map" />
+					<script type="text/javascript" src="resources/js/googleMap.js" />
+					<script type="text/javascript"
+						src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBZ44KG8PWypQI3cqfl1JwSWn81YMpRXWc&amp;callback=initMap"
+						async="async" defer="defer" />
+				</rich:panel>
+			</a4j:outputPanel>
+		</h:panelGrid>
+	</h:form>
+</body>
+</html>
