@@ -1,16 +1,20 @@
 package com.guina.loratracker.model;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Enumeration;
-import java.util.Set;
+import java.util.List;
 
 import javax.swing.tree.TreeNode;
+
+import com.guina.loratracker.util.JsonUtils;
 
 public class MoteNode extends NamedNode implements LoraTreeNode
 {
 	private static final long serialVersionUID = -8509649794114670371L;
 	private GatewayNode parent;
 	private Mote mote;
-	private Set<String> moteHistory;
+	private List<ActiveMoteNode> trace = new ArrayList<>();
 
 	public MoteNode()
 	{
@@ -21,13 +25,13 @@ public class MoteNode extends NamedNode implements LoraTreeNode
 	@Override
 	public TreeNode getChildAt(int childIndex)
 	{
-		return null;
+		return trace.get(childIndex);
 	}
 
 	@Override
 	public int getChildCount()
 	{
-		return 0;
+		return trace.size();
 	}
 
 	@Override
@@ -44,26 +48,26 @@ public class MoteNode extends NamedNode implements LoraTreeNode
 	@Override
 	public int getIndex(TreeNode node)
 	{
-		return 0;
+		return trace.indexOf(node);
 	}
 
 	@Override
 	public boolean getAllowsChildren()
 	{
-		return false;
+		return true;
 	}
 
 	@Override
 	public boolean isLeaf()
 	{
-		return true;
+		return trace.isEmpty();
 	}
 
 	@SuppressWarnings("rawtypes")
 	@Override
 	public Enumeration children()
 	{
-		return null;
+		return Collections.enumeration(trace);
 	}
 
 	public Mote getMote()
@@ -76,19 +80,38 @@ public class MoteNode extends NamedNode implements LoraTreeNode
 		this.mote = mote;
 	}
 
-	public Set<String> getMoteHistory()
+	public List<ActiveMoteNode> getTrace()
 	{
-		return moteHistory;
+		return trace;
 	}
 
-	public void setMoteHistory(Set<String> moteHistory)
+	public void setTrace(List<ActiveMoteNode> trace)
 	{
-		this.moteHistory = moteHistory;
+		this.trace = trace;
 	}
 
 	@Override
 	public String getDisplayContents()
 	{
-		return "MoteNode [parent=" + parent + ", mote=" + mote + "]";
+		return JsonUtils.convertJsonToString(getGoogleMapMarker());
+	}
+
+	@Override
+	public GoogleMapMarker getGoogleMapMarker()
+	{
+		float lat = 0.0f;
+		float lng = 0.0f;
+		ActiveMoteNode activeMoteNode = (trace == null || trace.isEmpty()) ? null : trace.get(0);
+		if (activeMoteNode != null)
+		{
+			lat = activeMoteNode.getLat();
+			lng = activeMoteNode.getLng();
+		}
+		GoogleMapPosition markerPosition = new GoogleMapPosition(lat, lng);
+		String contents = getType() + "=" + getName() + "<br/>" + lat + "," + lng;
+
+		return new GoogleMapMarker(markerPosition, "http://maps.google.com/mapfiles/ms/micons/blue-pushpin.png", contents,
+						getName());
+
 	}
 }

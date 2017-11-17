@@ -2,31 +2,33 @@ package com.guina.loratracker.model;
 
 public class GoogleMapMarker
 {
-	private GoogleMapCoordinator coords;
+	private GoogleMapPosition position;
 	private String iconImg;
 	private String contents;
+	private String title;
 
 	public GoogleMapMarker()
 	{
 		super();
 	}
 
-	public GoogleMapMarker(GoogleMapCoordinator coords, String iconImg, String contents)
+	public GoogleMapMarker(GoogleMapPosition position, String iconImg, String contents, String title)
 	{
 		super();
-		this.coords = coords;
+		this.position = position;
 		this.iconImg = iconImg;
 		this.contents = contents;
+		this.title = title;
 	}
 
-	public GoogleMapCoordinator getCoords()
+	public GoogleMapPosition getPosition()
 	{
-		return coords;
+		return position;
 	}
 
-	public void setCoords(GoogleMapCoordinator coords)
+	public void setPisition(GoogleMapPosition position)
 	{
-		this.coords = coords;
+		this.position = position;
 	}
 
 	public String getIconImg()
@@ -47,6 +49,16 @@ public class GoogleMapMarker
 	public void setContents(String contents)
 	{
 		this.contents = contents;
+	}
+
+	public String getTitle()
+	{
+		return title;
+	}
+
+	public void setTitle(String title)
+	{
+		this.title = title;
 	}
 
 }

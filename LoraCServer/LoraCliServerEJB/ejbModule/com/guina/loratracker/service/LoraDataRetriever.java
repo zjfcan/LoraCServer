@@ -43,7 +43,6 @@ public class LoraDataRetriever
 	private static final String pwd = "testaccount";
 	private String heartBeatMessage;
 	private String loginMessage;
-	private boolean receivingData = true;
 
 	@EJB
 	private LoraDataManager dataManager;
@@ -59,7 +58,6 @@ public class LoraDataRetriever
 	public void startReceiveData(int total)
 	{
 		logger.info("Connecting server (with count=" + total + ")...");
-		setReceivingData(true);
 		String loginInfo = createLoginRequest();
 
 		try (Socket clientSocket = new Socket(TCP_SERVER_ADDRESS, TCP_PORT))
@@ -112,7 +110,7 @@ public class LoraDataRetriever
 
 			// Read data
 			int count = 0;
-			while (count++ < total && isReceivingData())
+			while (count++ < total)
 			{
 				readFromServer = LoraUtil.readData(inputStream);
 				if (!LoraCommandType.JASON_OBJ.equals(readFromServer.getCommandType()))
@@ -127,29 +125,31 @@ public class LoraDataRetriever
 				if (dataReceived != null)
 				{
 					UpLinkData immeApp = dataReceived.getImmeApp();
+					String logMsg = "Received (" + count + "): " + readFromServer;
 					if (immeApp != null)
 					{
-						logger.info("Received (" + count + "): " + readFromServer);
+						logger.info(logMsg);
 						recordGatewayMotes(immeApp);
 					}
 
 					UpLinkData app = dataReceived.getApp();
 					if (app != null)
 					{
-						logger.info("Received (" + count + "): " + readFromServer);
+						logger.info(logMsg);
 						recordGatewayMotes(app);
 					}
 
 					Mote mote = dataReceived.getMote();
 					if (mote != null)
 					{
-						logger.info("Received (" + count + "): " + readFromServer);
+						logger.info(logMsg);
+						dataManager.putEuiToMote(LoraUtil.longToHex(mote.getEui()), mote);
 					}
 
 					Gateway gateway = dataReceived.getGateway();
 					if (gateway != null && gateway.getStatus().getLati() != 0)
 					{
-						logger.info("Received (" + count + "): " + readFromServer);
+						logger.info(logMsg);
 						dataManager.putEuiToGateways(LoraUtil.longToHex(gateway.getEUI()), gateway);
 					}
 				}
@@ -184,7 +184,8 @@ public class LoraDataRetriever
 				moteReportTimes = new HashSet<>();
 				dataManager.putMoteEuiToMoteReportTime(moteEuiHex, moteReportTimes);
 			}
-			String sentGatewayTime = gateway.getTime();
+			String sentGatewayTime = String.valueOf(userMote.getUserData().getSeqno()) + "_"
+							+ gatewayEuiHex; // because gateway.getTime() sometimes is not available(give null);
 			moteReportTimes.add(sentGatewayTime);
 
 			dataManager.putReportTimeToUplinkData(sentGatewayTime, userMote);
@@ -229,20 +230,5 @@ public class LoraDataRetriever
 	public void setLoginMessage(String loginMessage)
 	{
 		this.loginMessage = loginMessage;
-	}
-
-	public boolean isReceivingData()
-	{
-		return receivingData;
-	}
-
-	public void setReceivingData(boolean receivingData)
-	{
-		this.receivingData = receivingData;
-	}
-
-	public void stopReceiveData()
-	{
-		setReceivingData(false);
 	}
 }

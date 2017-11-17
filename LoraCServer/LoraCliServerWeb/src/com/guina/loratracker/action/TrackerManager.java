@@ -10,7 +10,6 @@ import javax.faces.bean.ViewScoped;
 import org.jboss.logging.Logger;
 
 import com.guina.loratracker.entity.LoraUser;
-import com.guina.loratracker.service.LoraDataRetriever;
 import com.guina.loratracker.service.LoraDbService;
 
 @ManagedBean
@@ -23,26 +22,21 @@ public class TrackerManager implements Serializable
 	@EJB
 	private LoraDbService dbService;
 
-	@EJB
-	private LoraDataRetriever dataRetriever;
-
 	private LoraUser loraUser;
 
 	@PostConstruct
 	public void init()
 	{
 		loraUser = new LoraUser();
-	}
-
-	public String connectServer()
-	{
-		dataRetriever.startReceiveData(100);
-		logger.info("Finished connect server.");
-		return null;
+		loraUser.setUsername("aaa");
+		loraUser.setPassword("bbb");
+		loraUser.setUserRole("ccc");
+		loraUser.setUserGroup("ddd");
 	}
 
 	public String saveUser()
 	{
+		logger.info("Save user: " + loraUser);
 		dbService.saveUser(loraUser);
 
 		return null;

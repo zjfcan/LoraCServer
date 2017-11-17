@@ -1,16 +1,16 @@
 package com.guina.loratracker.model;
 
-public class GoogleMapCoordinator
+public class GoogleMapPosition
 {
 	private float lat;
 	private float lng;
 
-	public GoogleMapCoordinator()
+	public GoogleMapPosition()
 	{
 		super();
 	}
 
-	public GoogleMapCoordinator(float lat, float lng)
+	public GoogleMapPosition(float lat, float lng)
 	{
 		super();
 		this.lat = lat;

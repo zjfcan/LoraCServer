@@ -10,6 +10,9 @@
 <body>
 	<h:outputStylesheet name="css/loraWeb.css" />
 	<h:form id="form">
+		<a4j:poll id="poll" interval="8000" action="#{loraTrackerTreeBean.startReceivingData()}"
+			oncomplete="addMarkersWithoutInfoWindow(#{loraTrackerTreeBean.mapMarkers});"
+			enabled="#{loraTrackerTreeBean.pollEnabled}" render="tree,trackerMap" />
 		<h:panelGrid columns="2" columnClasses="treeMenu,mainContent"
 			width="100%">
 			<h:panelGrid columns="2">
@@ -17,10 +20,10 @@
 					<a4j:ajax />
 				</h:inputText>
 				<h:commandButton value="Start"
-					action="#{loraTrackerTreeBean.startReceivingData()}" />
+					action="#{loraTrackerTreeBean.startPolling()}" />
 			</h:panelGrid>
 			<h:commandButton value="Stop"
-				action="#{loraTrackerTreeBean.stopReceivingData()}" />
+				action="#{loraTrackerTreeBean.stopPolling()}" />
 
 			<rich:panel>
 				<f:facet name="header">
@@ -39,9 +42,15 @@
 			<a4j:outputPanel ajaxRendered="true" layout="block">
 				<rich:panel id="trackerMap" header="Tracker Map">
 					<h:outputText value="#{loraTrackerTreeBean.displayData}" />
-					<h:commandButton value="Add Markers">
+					<h:commandButton value="Add No Info Markers">
 						<a4j:ajax event="click"
-							oncomplete="addMarkers(#{loraTrackerTreeBean.mapMarkers})" />
+							oncomplete="addMarkersWithoutInfoWindow(#{loraTrackerTreeBean.mapMarkers});"
+							render="map" />
+					</h:commandButton>
+					<h:commandButton value="Add Markers With Info">
+						<a4j:ajax event="click"
+							oncomplete="addMarkersWithInfoWindow(#{loraTrackerTreeBean.mapMarkers});"
+							render="map" />
 					</h:commandButton>
 
 					<div id="map" />

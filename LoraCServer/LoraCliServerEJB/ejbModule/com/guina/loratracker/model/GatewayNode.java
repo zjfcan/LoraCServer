@@ -79,10 +79,16 @@ public class GatewayNode extends NamedNode implements LoraTreeNode
 	@Override
 	public String getDisplayContents()
 	{
-		// return "GatewayNode [gateway=" + gateway + ", motes=" + motes + "]";
-		return JsonUtils.convertJsonToString(new GoogleMapMarker(
-						new GoogleMapCoordinator(gateway.getStatus().getLati(),
+		return JsonUtils.convertJsonToString(getGoogleMapMarker());
+	}
+
+	public GoogleMapMarker getGoogleMapMarker()
+	{
+		String contents = getType() + "=" + getName() + "<br/>" + gateway.getStatus().getLati()
+						+ "," + gateway.getStatus().getLong();
+		return new GoogleMapMarker(
+						new GoogleMapPosition(gateway.getStatus().getLati(),
 										gateway.getStatus().getLong()),
-						"/resources/images/capitals/newmexico.gif", getName()));
+						"http://maps.google.com/mapfiles/ms/micons/blue.png", contents, getName());
 	}
 }

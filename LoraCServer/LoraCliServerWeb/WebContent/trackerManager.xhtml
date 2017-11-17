@@ -10,25 +10,20 @@
 <body>
 	<h:form>
 		<rich:panel header="Create User">
-			<ui:remove>
-				<h:panelGrid style="align-content: center;">
-					<h:panelGrid columns="2">
-						<h:outputText value="Username" />
-						<h:inputText value="#{trackerManager.loraUser.username}" />
-						<h:outputText value="Password" />
-						<h:inputSecret value="#{trackerManager.loraUser.password}" />
-						<h:outputText value="User Role" />
-						<h:inputText value="#{trackerManager.loraUser.userRole}" />
-						<h:outputText value="User Group" />
-						<h:inputText value="#{trackerManager.loraUser.userGroup}" />
-					</h:panelGrid>
-					<h:commandButton value="Save User"
-						action="#{trackerManager.saveUser()}" />
+			<h:panelGrid style="align-content: center;">
+				<h:panelGrid columns="2">
+					<h:outputText value="Username" />
+					<h:inputText value="#{trackerManager.loraUser.username}" />
+					<h:outputText value="Password" />
+					<h:inputSecret value="#{trackerManager.loraUser.password}" />
+					<h:outputText value="User Role" />
+					<h:inputText value="#{trackerManager.loraUser.userRole}" />
+					<h:outputText value="User Group" />
+					<h:inputText value="#{trackerManager.loraUser.userGroup}" />
 				</h:panelGrid>
-			</ui:remove>
-
-			<h:commandButton value="Connect"
-				action="#{trackerManager.connectServer()}" />
+				<h:commandButton value="Save User"
+					action="#{trackerManager.saveUser()}" />
+			</h:panelGrid>
 		</rich:panel>
 	</h:form>
 </body>
