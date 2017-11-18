@@ -18,7 +18,8 @@ public class LoraDbService
 
 	public void saveUser(LoraUser loraUser)
 	{
-		em.persist(loraUser);
+		em.merge(loraUser);
+		em.flush();
 
 		logger.info("Persisted User: " + loraUser);
 	}
