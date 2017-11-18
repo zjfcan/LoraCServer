@@ -21,7 +21,7 @@ import com.guina.loratracker.model.Gateway;
 import com.guina.loratracker.model.LoginAccount;
 import com.guina.loratracker.model.LoraCommand;
 import com.guina.loratracker.model.LoraCommandType;
-import com.guina.loratracker.model.LoraLoginJsn;
+import com.guina.loratracker.model.LoraLogin;
 import com.guina.loratracker.model.Mote;
 import com.guina.loratracker.model.UpLinkData;
 import com.guina.loratracker.util.EncodeUtil;
@@ -200,7 +200,7 @@ public class LoraDataRetriever
 		// + "\"accept\":false," + "\"serverAccept\":false," + "\"serverUser\":null,"
 		// + "\"serverPwd\":null," + "\"serverDB\":null" + "}" + "}";
 
-		LoraLoginJsn loginData = new LoraLoginJsn();
+		LoraLogin loginData = new LoraLogin();
 		LoginAccount account = new LoginAccount();
 		account.setUser(user);
 		account.setPwd(EncodeUtil.md5Encrypt32(pwd));

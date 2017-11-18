@@ -1,4 +1,4 @@
-package com.guina.loratracker.model;
+package com.guina.loratracker.entity;
 
 import java.io.Serializable;
 import java.util.Date;
